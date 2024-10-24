@@ -45,11 +45,11 @@ void convole_sequential(int* A, int* F, int NA, int NF) {
     }
 
     double end_time = omp_get_wtime(); // End timing
-    printf("sequential: ");
+    // printf("sequential: ");
     for (int i = 0; i < (NA - NF + 1); i++) {
-        printf("%d ", result[i]);
+        printf("%d\n", result[i]);
     }
-    printf("\nTime taken (sequential): %f seconds\n", end_time - start_time);
+    // printf("\nTime taken (sequential): %f seconds\n", end_time - start_time);
     free(F_copy);  // Free allocated memory for F_copy
     free(result);  // Free allocated memory for result
 }
