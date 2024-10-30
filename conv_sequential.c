@@ -1,10 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <omp.h>
+#include <time.h>
 
 // Function to create a copy of the array
 int* copyArray(int* arr, int size) {
     int* newArr = malloc(size * sizeof(int));
+    if (newArr == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     for (int i = 0; i < size; i++) {
         newArr[i] = arr[i];
     }
@@ -33,7 +37,13 @@ void convole_sequential(int* A, int* F, int NA, int NF) {
     int* F_copy = copyArray(F, NF);
     reverseArray(F_copy, NF);
     int* result = malloc(sizeof(int) * (NA - NF + 1));
-    double start_time = omp_get_wtime(); // Start timing
+    if (result == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        free(F_copy);
+        exit(EXIT_FAILURE);
+    }
+
+    clock_t start_time = clock(); // Start timing
 
     for (int j = 0; j < (NA - NF + 1); j++) {
         int sum = 0;
@@ -44,16 +54,20 @@ void convole_sequential(int* A, int* F, int NA, int NF) {
         result[j] = sum;
     }
 
-    double end_time = omp_get_wtime(); // End timing
-    // printf("sequential: ");
+    clock_t end_time = clock(); // End timing
+
+    // Output results
     for (int i = 0; i < (NA - NF + 1); i++) {
         printf("%d\n", result[i]);
     }
-    // printf("\nTime taken (sequential): %f seconds\n", end_time - start_time);
+    
+    // Calculate time taken
+    double time_taken = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+    // printf("\nTime taken (sequential): %f seconds\n", time_taken);
+
     free(F_copy);  // Free allocated memory for F_copy
     free(result);  // Free allocated memory for result
 }
-
 
 int main() {
     // ---- input and malloc A, F ----
@@ -61,6 +75,10 @@ int main() {
     scanf("%d %d", &NA, &NF);
     int* A = malloc(sizeof(int) * NA);
     int* F = malloc(sizeof(int) * NF);
+    if (A == NULL || F == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     for (int i = 0; i < NA; i++) {
         scanf("%d", &A[i]);
@@ -68,9 +86,9 @@ int main() {
     for (int i = 0; i < NF; i++) {
         scanf("%d", &F[i]);
     }
-    // ---- end input and malloc----
+    // ---- end input and malloc ----
 
-    // Implement here
+    // Implement convolution
     convole_sequential(A, F, NA, NF);
 
     // ---- free memory ----
